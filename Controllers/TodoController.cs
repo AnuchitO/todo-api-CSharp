@@ -42,6 +42,7 @@ namespace TodoApi.Controllers
 
           return todoItem;
         }
+
         [HttpPost]
         public async Task<ActionResult<TodoItem>> PostTodoItem(TodoItem todoItem)
         {
@@ -49,6 +50,21 @@ namespace TodoApi.Controllers
           await _context.SaveChangesAsync();
 
           return CreatedAtAction("GetTodoItem", new { id = todoItem.Id}, todoItem);
+        }
+
+        // Handle exception please. Attempted to update or delete an entity that does not exist in the store.
+        [HttpPut("{id}")]
+        public async Task<IActionResult> PutTodoItem(long id, TodoItem todoItem)
+        {
+            if(id != todoItem.Id)
+            {
+              return BadRequest();
+            }
+
+            _context.Entry(todoItem).State = EntityState.Modified;
+            await _context.SaveChangesAsync();
+
+            return NoContent();
         }
     }
 }
